@@ -1,0 +1,47 @@
+CREATE TABLE raw_orders (
+    id          serial PRIMARY KEY,
+    customer    text,
+    order_date  text,          -- dirty: inconsistent formats
+    amount      text,          -- dirty: currency symbols, thousands separators, spaces
+    status      text           -- dirty: mixed case, extra spaces
+);
+
+INSERT INTO raw_orders(customer,order_date,amount,status) VALUES
+('  Alice  ','2025/9/13','$ 1,234.50 ',' completed  '),
+('bob','13-09-2025','€ 999.00',NULL),
+('  ALICE','20250913','1.234,50', 'COMPLETED'),
+('café','09.13.2025','USD 1000', 'pending');
+
+CREATE OR REPLACE VIEW v1_orders_clean AS
+SELECT
+    id,
+    lower(trim(customer))                                    AS customer,
+    to_date(order_date,
+            CASE
+                WHEN order_date ~ '^\d{4}/\d{1,2}/\d{1,2}'  THEN 'YYYY/MM/DD'
+                WHEN order_date ~ '^\d{1,2}-\d{1,2}-\d{4}'  THEN 'DD-MM-YYYY'
+                WHEN order_date ~ '^\d{8}$'                 THEN 'YYYYMMDD'
+                WHEN order_date ~ '^\d{1,2}\.\d{1,2}\.\d{4}' THEN 'DD.MM.YYYY'
+            END)                                             AS order_date,
+    /* Key: remove currency symbols / letters / spaces, then drop thousands commas, finally cast to numeric */
+    replace(
+        regexp_replace(amount,                -- Step 1: strip symbols / spaces / letters
+                       '[\s\$\€A-Za-z]', '', 'g'),
+        ',', '')::numeric                     -- Step 2: remove thousands commas and cast to numeric
+    AS amount,
+    lower(trim(status))                                      AS status
+FROM raw_orders;
+
+CREATE OR REPLACE VIEW v2_orders_valid AS
+SELECT *
+FROM v1_orders_clean
+WHERE status   IN ('completed','pending','shipped')
+  AND amount   > 0
+  AND customer <> '';
+
+-- Analysts / BI tools only query this layer
+SELECT customer,
+       sum(amount) AS total_sales
+FROM v2_orders_valid
+GROUP BY customer
+ORDER BY total_sales DESC;

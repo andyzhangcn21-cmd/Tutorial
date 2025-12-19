@@ -1,0 +1,24 @@
+-- 3. SERIALIZABLE Isolation Level
+-- In this isolation level, PostgreSQL guarantees that transactions can be serialized as if they were executed one after another.
+-- If this cannot be done, an error is thrown.
+ 
+-- Session A
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT value FROM test_table WHERE id = 1; -- Assume it returns 1
+UPDATE test_table SET value = value + 1 WHERE id = 1;
+-- Not committed yet
+ 
+-- Session B (concurrent environment)
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT value FROM test_table WHERE id = 1; -- Assume it returns 1
+UPDATE test_table SET value = value + 1 WHERE id = 1;
+-- Attempt to commit
+COMMIT; -- If Session A has not committed yet, this may throw a serialization error
+ 
+-- If Session B throws an error, it needs to rollback and retry
+ROLLBACK;
+ 
+-- Session A
+COMMIT; -- After committing, Session A's changes are saved

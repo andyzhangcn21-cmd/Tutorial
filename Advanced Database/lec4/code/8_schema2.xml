@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="8_schema2.xsd">
+    <customers>
+        <customer>
+            <id>1</id>
+            <name>Alice</name>
+        </customer>
+        <customer>
+            <id>2</id>
+            <name>Bob</name>
+        </customer>
+    </customers>
+
+    <orders>
+        <order>
+            <orderId>1001</orderId>
+            <customerId>1</customerId> <!-- 引用存在的客户ID -->
+        </order>
+        <order>
+            <orderId>1002</orderId>
+            <customerId>2</customerId> <!-- 引用存在的客户ID -->
+        </order>
+    </orders>
+</root>
+    

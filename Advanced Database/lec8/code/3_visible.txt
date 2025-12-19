@@ -1,0 +1,112 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class BankAccount {
+private:
+    // Private members: Only accessible within the class
+    string accountNumber;
+    double balance;
+    string password;
+
+    // Private method: Internal helper function
+    bool isValidAmount(double amount) {
+        return amount > 0;
+    }
+
+public:
+    // Public constructor: Accessible from outside
+    BankAccount(string accNum, double initialBalance, string pwd) {
+        accountNumber = accNum;
+        balance = initialBalance;
+        password = pwd;
+    }
+
+    // Public methods: Accessible from outside the class
+    double getBalance() {
+        return balance;
+    }
+
+    string getAccountNumber() {
+        return accountNumber;
+    }
+
+    void deposit(double amount) {
+        if (isValidAmount(amount)) {
+            balance += amount;
+            cout << "Deposited: $" << amount << endl;
+        } else {
+            cout << "Invalid deposit amount!" << endl;
+        }
+    }
+
+    bool withdraw(double amount, string inputPassword) {
+        if (inputPassword != password) {
+            cout << "Incorrect password!" << endl;
+            return false;
+        }
+        
+        if (isValidAmount(amount) && amount <= balance) {
+            balance -= amount;
+            cout << "Withdrawn: $" << amount << endl;
+            return true;
+        } else {
+            cout << "Invalid withdrawal amount or insufficient funds!" << endl;
+            return false;
+        }
+    }
+};
+
+class SavingsAccount : public BankAccount {
+protected:
+    // Protected member: Accessible within class and derived classes
+    double interestRate;
+
+public:
+    SavingsAccount(string accNum, double initialBalance, string pwd, double rate)
+        : BankAccount(accNum, initialBalance, pwd) {
+        interestRate = rate;
+    }
+
+    // Protected method can be accessed by derived classes
+    void applyInterest() {
+        double interest = getBalance() * interestRate;
+        deposit(interest);
+        cout << "Interest applied: $" << interest << endl;
+    }
+
+    // Public interface to access protected functionality
+    void monthlyUpdate() {
+        applyInterest();
+    }
+};
+
+int main() {
+    // Create a bank account
+    BankAccount myAccount("123456", 1000.0, "secret123");
+    
+    // Public members are accessible
+    cout << "Account: " << myAccount.getAccountNumber() << endl;
+    cout << "Balance: $" << myAccount.getBalance() << endl;
+    
+    // Public methods can be called
+    myAccount.deposit(500.0);
+    myAccount.withdraw(200.0, "secret123");
+    
+    // Private members are NOT accessible - these would cause compilation errors:
+    // myAccount.balance = 1000000; // ERROR: 'balance' is private
+    // myAccount.password = "hack"; // ERROR: 'password' is private
+    // myAccount.isValidAmount(100); // ERROR: 'isValidAmount' is private
+    
+    cout << "\n--- Savings Account ---\n";
+    SavingsAccount savings("789012", 2000.0, "mypwd", 0.05);
+    savings.monthlyUpdate();
+    cout << "New balance: $" << savings.getBalance() << endl;
+    
+    // Protected members are NOT accessible from outside:
+    // savings.interestRate = 0.1; // ERROR: 'interestRate' is protected
+    // savings.applyInterest(); // ERROR: 'applyInterest' is protected
+    
+    return 0;
+}

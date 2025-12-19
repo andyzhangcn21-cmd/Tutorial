@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<university xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="7_schema.xsd">
+    <!-- 定义部门 -->
+    <department>
+        <deptName>Computer Science</deptName>
+        <building>Building A</building>
+        <budget>500000.00</budget>
+    </department>
+    <department>
+        <deptName>Mathematics</deptName>
+        <building>Building B</building>
+        <budget>300000.00</budget>
+    </department>
+
+    <!-- 定义课程 -->
+    <course>
+        <courseID>CS101</courseID>
+        <title>Introduction to Computer Science</title>
+        <deptName>Computer Science</deptName>
+        <credits>3</credits>
+    </course>
+    <course>
+        <courseID>MATH101</courseID>
+        <title>Calculus</title>
+        <deptName>Mathematics</deptName>
+        <credits>4</credits>
+    </course>
+
+    <!-- 定义教师 -->
+    <instructor>
+        <IID>I001</IID>
+        <name>John Doe</name>
+        <deptName>Computer Science</deptName>
+        <salary>60000.00</salary>
+    </instructor>
+    <instructor>
+        <IID>I002</IID>
+        <name>Jane Smith</name>
+        <deptName>Mathematics</deptName>
+        <salary>55000.00</salary>
+    </instructor>
+
+    <!-- 定义教学关系 -->
+    <teaches>
+        <IID>I001</IID>
+        <courseID>CS101</courseID>
+        <semester>Fall</semester>
+        <year>2023</year>
+    </teaches>
+    <teaches>
+        <IID>I002</IID>
+        <courseID>MATH101</courseID>
+        <semester>Spring</semester>
+        <year>2024</year>
+    </teaches>
+</university>

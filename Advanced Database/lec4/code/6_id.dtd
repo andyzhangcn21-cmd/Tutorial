@@ -1,0 +1,26 @@
+<!DOCTYPE university [
+    <!ELEMENT university ( (department|course|instructor)+)>
+    
+    <!ELEMENT department ( building, budget )>
+    <!ATTLIST department
+           dept_name ID #REQUIRED >
+    
+    <!ELEMENT course (title, credits )>
+    <!ATTLIST course
+           course_id ID #REQUIRED
+           dept_name IDREF #REQUIRED
+           instructors IDREFS #IMPLIED >
+    
+    <!ELEMENT instructor ( name, salary )>
+    <!ATTLIST instructor
+           IID ID #REQUIRED 
+           dept_name IDREF #REQUIRED >
+    
+    <!-- 补全的元素声明 -->
+    <!ELEMENT title (#PCDATA)>         <!-- 课程标题 -->
+    <!ELEMENT credits (#PCDATA)>       <!-- 课程学分 -->
+    <!ELEMENT building (#PCDATA)>      <!-- 系楼位置 -->
+    <!ELEMENT budget (#PCDATA)>        <!-- 系预算 -->
+    <!ELEMENT name (#PCDATA)>          <!-- 教师姓名 -->
+    <!ELEMENT salary (#PCDATA)>        <!-- 教师薪水 -->
+]>

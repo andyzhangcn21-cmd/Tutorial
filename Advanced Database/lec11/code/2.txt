@@ -1,0 +1,22 @@
+-- 2. REPEATABLE READ Isolation Level
+-- In this isolation level, a transaction sees a snapshot of the data as it was at the start of the transaction.
+ 
+-- Session A
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SELECT value FROM test_table WHERE id = 1; -- Assume it returns 1
+UPDATE test_table SET value = value + 1 WHERE id = 1;
+-- Not committed yet
+ 
+-- Session B (concurrent environment)
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SELECT value FROM test_table WHERE id = 1; -- Will return 1, even if Session A has updated but not committed
+UPDATE test_table SET value = value + 1 WHERE id = 1; -- This will wait for Session A to commit or rollback
+ 
+-- Session A
+COMMIT; -- After committing, Session B's UPDATE will execute and see Session A's changes
+ 
+-- Session B
+COMMIT; -- After committing, value should be 3 (because Session B's UPDATE executed after Session A committed)
+ 

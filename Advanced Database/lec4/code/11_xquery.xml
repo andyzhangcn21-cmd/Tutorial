@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<university>
+    <department name="Computer Science">
+        <course course_id="CS101">
+            <name>Introduction to Computer Science</name>
+            <credits>4</credits>
+        </course>
+        <course course_id="CS201">
+            <name>Data Structures</name>
+            <credits>5</credits>
+        </course>
+    </department>
+    <department name="Mathematics">
+        <course course_id="MA101">
+            <name>Calculus I</name>
+            <credits>3</credits>
+        </course>
+        <course course_id="MA201">
+            <name>Linear Algebra</name>
+            <credits>4</credits>
+        </course>
+    </department>
+</university>
+
+<!--
+
+basic
+
+for $course in /university/department/course
+return $course
+
+where
+
+for $course in /university/department/course
+where $course/credits > 1
+return $course
+
+let
+
+for $course in /university/department/course
+let $courseId := $course/@course_id
+let $courseName := $course/name
+where $course/credits > 3
+return <course_info>
+    <course_id>{$courseId}</course_id>
+    <name>{$courseName}</name>
+</course_info>
+
+contruct new
+
+for $course in /university/department/course
+where $course/credits > 3
+return <course_info>
+    <course_id>{$course/@course_id}</course_id>
+    <name>{$course/name}</name>
+</course_info>
+
+order
+
+for $course in /university/department/course
+where $course/credits > 3
+order by $course/@course_id
+return <course_info>
+    <course_id>{$course/@course_id}</course_id>
+    <name>{$course/name}</name>
+</course_info>
+
+-->

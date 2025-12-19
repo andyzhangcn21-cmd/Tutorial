@@ -1,0 +1,103 @@
+-- 1. build table
+
+CREATE TABLE student (
+    id       text PRIMARY KEY,
+    name     text NOT NULL,
+    dept_name text NOT NULL,
+    tot_cred integer CHECK (tot_cred >= 0)
+);
+
+INSERT INTO student (id, name, dept_name, tot_cred) VALUES
+('00128',  'Zhang',    'Comp. Sci.', 102),
+('12345',  'Shankar',  'Comp. Sci.',  32),
+('19991',  'Brandt',   'History',     80),
+('23121',  'Chavez',   'Finance',    110),
+('44553',  'Peltier',  'Physics',     56),
+('45678',  'Levy',     'Physics',     46),
+('54321',  'Williams', 'Comp. Sci.',  54),
+('55739',  'Sanchez',  'Music',       38),
+('70557',  'Snow',     'Physics',      0),
+('76543',  'Brown',    'Comp. Sci.',  58),
+('76653',  'Aoi',      'Elec. Eng.',  60),
+('98765',  'Bourikas', 'Elec. Eng.',  98),
+('98988',  'Tanaka',   'Biology',    120);
+
+--select * from student;
+
+-- 2. build table
+
+CREATE TABLE takes (
+    id        CHAR(5),
+    course_id VARCHAR(8),
+    sec_id    VARCHAR(4),
+    semester  VARCHAR(6),
+    year      INTEGER,
+    grade     VARCHAR(2),
+    PRIMARY KEY (id, course_id, sec_id, semester, year),
+    FOREIGN KEY (id) REFERENCES student(id)
+        ON DELETE CASCADE
+);
+
+INSERT INTO takes (id, course_id, sec_id, semester, year, grade) VALUES
+('00128', 'CS-101', '1', 'Fall',   2017, 'A'),
+('00128', 'CS-347', '1', 'Fall',   2017, 'A-'),
+('12345', 'CS-101', '1', 'Fall',   2017, 'C'),
+('12345', 'CS-190', '2', 'Spring', 2017, 'A'),
+('12345', 'CS-315', '1', 'Spring', 2018, 'A'),
+('12345', 'CS-347', '1', 'Fall',   2017, 'A'),
+('19991', 'HIS-351', '1', 'Spring', 2018, 'B'),
+('23121', 'FIN-201', '1', 'Spring', 2018, 'C+'),
+('44553', 'PHY-101', '1', 'Fall',   2017, 'B-'),
+('45678', 'CS-101', '1', 'Fall',   2017, 'F'),
+('45678', 'CS-101', '1', 'Spring', 2018, 'B+'),
+('45678', 'CS-319', '1', 'Spring', 2018, 'B'),
+('54321', 'CS-101', '1', 'Fall',   2017, 'A-'),
+('54321', 'CS-190', '2', 'Spring', 2017, 'B+'),
+('55739', 'MU-199', '1', 'Spring', 2018, 'A-'),
+('76543', 'CS-101', '1', 'Fall',   2017, 'A'),
+('76543', 'CS-319', '2', 'Spring', 2018, 'A'),
+('76653', 'EE-181', '1', 'Spring', 2017, 'C'),
+('98765', 'CS-101', '1', 'Fall',   2017, 'C-'),
+('98765', 'CS-315', '1', 'Spring', 2018, 'B'),
+('98988', 'BIO-101', '1', 'Summer', 2017, 'A'),
+('98988', 'BIO-301', '1', 'Summer', 2018, NULL);
+
+--select * from takes;
+
+--SELECT * FROM student NATURAL JOIN takes;
+
+-- 3. build table
+
+CREATE TABLE course (
+    course_id  VARCHAR(8) PRIMARY KEY,
+    title      VARCHAR(100) NOT NULL,
+    dept_name  VARCHAR(30)  NOT NULL,
+    credits    INTEGER      CHECK (credits > 0)
+);
+
+INSERT INTO course (course_id, title, dept_name, credits) VALUES
+('CS-101', 'Introduction to Computer Science', 'Comp. Sci.', 3),
+('CS-190', 'Game Design', 'Comp. Sci.', 3),
+('CS-315', 'Database Systems', 'Comp. Sci.', 3),
+('CS-319', 'Software Engineering', 'Comp. Sci.', 3),
+('CS-347', 'Machine Learning', 'Comp. Sci.', 3),
+('HIS-351', 'World History', 'History', 3),
+('FIN-201', 'Investment Banking', 'Finance', 3),
+('PHY-101', 'General Physics I', 'Physics', 4),
+('MU-199', 'Music Theory', 'Music', 2),
+('EE-181', 'Intro to Electrical Engineering', 'Elec. Eng.', 3),
+('BIO-101', 'General Biology I', 'Biology', 3),
+('BIO-301', 'Genomics', 'Biology', 3);
+
+--select name, course_id
+--from  student, takes;
+--where student.ID = takes.ID;
+
+
+select name, title
+from student natural join takes, course;
+--where takes.course_id = course.course_id;
+
+select name, title
+from student natural join takes natural join course
+

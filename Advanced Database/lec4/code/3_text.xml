@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<course course_id="CS-101" Title="Intro. To Computer Science" dept_name="Comp. Sci." credits="4" />
+-->
+<course course_id="CS-101" Title="Intro. To Computer Science" dept_name="Comp. Sci." credits="4">
+    <description>
+        <![CDATA[
+            <p>This course is an introduction to the fundamental concepts of computer science.</p>
+            <p>Topics include: <ul><li>Algorithms</li><li>Data Structures</li><li>Programming Languages</li></ul></p>
+        ]]>
+    </description>
+</course>

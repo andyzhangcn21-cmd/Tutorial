@@ -1,0 +1,77 @@
+# Parent class (Superclass)
+class Mammal:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def eat(self):
+        return f"{self.name} is eating"
+    
+    def sleep(self):
+        return f"{self.name} is sleeping"
+    
+    def make_sound(self):
+        return "Some generic mammal sound"
+
+# Child class (Subclass) inheriting from Mammal
+class Dog(Mammal):
+    def __init__(self, name, age, breed):
+        # Call the parent class constructor
+        super().__init__(name, age)
+        self.breed = breed
+    
+    def make_sound(self):
+        # Override the parent class method
+        return "Woof! Woof!"
+    
+    def fetch(self):
+        # Dog-specific method
+        return f"{self.name} is fetching the ball"
+
+# Child class (Subclass) inheriting from Mammal  
+class Cat(Mammal):
+    def __init__(self, name, age, color):
+        # Call the parent class constructor
+        super().__init__(name, age)
+        self.color = color
+    
+    def make_sound(self):
+        # Override the parent class method
+        return "Meow!"
+    
+    def climb_tree(self):
+        # Cat-specific method
+        return f"{self.name} is climbing a tree"
+
+# Demonstration of inheritance
+if __name__ == "__main__":
+    # Create instances
+    generic_mammal = Mammal("Generic", 2)
+    dog = Dog("Buddy", 3, "Golden Retriever")
+    cat = Cat("Whiskers", 2, "Gray")
+    
+    # Test inherited methods
+    print(generic_mammal.eat())  # Output: Generic is eating
+    print(dog.eat())             # Output: Buddy is eating
+    print(cat.sleep())           # Output: Whiskers is sleeping
+    
+    # Test overridden methods
+    print(generic_mammal.make_sound())  # Output: Some generic mammal sound
+    print(dog.make_sound())             # Output: Woof! Woof!
+    print(cat.make_sound())             # Output: Meow!
+    
+    # Test subclass-specific methods
+    print(dog.fetch())      # Output: Buddy is fetching the ball
+    print(cat.climb_tree()) # Output: Whiskers is climbing a tree
+    
+    # Check inheritance relationships
+    print(f"Is dog a Mammal? {isinstance(dog, Mammal)}")  # Output: True
+    print(f"Is cat a Mammal? {isinstance(cat, Mammal)}")  # Output: True
+    
+    
+   Mammal
+     △
+     |
+  --------
+  |       |
+ Dog     Cat

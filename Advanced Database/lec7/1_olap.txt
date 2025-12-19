@@ -1,0 +1,161 @@
+-- Create sales fact table
+CREATE TABLE sales_fact (
+    sale_id SERIAL PRIMARY KEY,
+    sale_date DATE,
+    product_category VARCHAR(50),
+    product_subcategory VARCHAR(50),
+    region VARCHAR(50),
+    country VARCHAR(50),
+    city VARCHAR(50),
+    sales_amount DECIMAL(10,2),
+    quantity_sold INTEGER
+);
+
+-- Insert sample data
+INSERT INTO sales_fact (sale_date, product_category, product_subcategory, region, country, city, sales_amount, quantity_sold) VALUES
+('2024-01-15', 'Electronics', 'Smartphones', 'North America', 'USA', 'New York', 1500.00, 3),
+('2024-01-20', 'Electronics', 'Laptops', 'North America', 'USA', 'Los Angeles', 2500.00, 2),
+('2024-02-10', 'Electronics', 'Smartphones', 'Europe', 'UK', 'London', 1200.00, 2),
+('2024-02-15', 'Clothing', 'Men''s Wear', 'Europe', 'France', 'Paris', 800.00, 4),
+('2024-03-05', 'Electronics', 'Laptops', 'Asia', 'Japan', 'Tokyo', 3000.00, 3),
+('2024-03-12', 'Clothing', 'Women''s Wear', 'North America', 'Canada', 'Toronto', 600.00, 3),
+('2024-01-25', 'Electronics', 'Tablets', 'North America', 'USA', 'Chicago', 900.00, 2),
+('2024-02-28', 'Clothing', 'Men''s Wear', 'Asia', 'China', 'Beijing', 750.00, 5),
+('2024-03-20', 'Electronics', 'Smartphones', 'Europe', 'Germany', 'Berlin', 1800.00, 4),
+('2024-03-25', 'Clothing', 'Women''s Wear', 'Europe', 'Italy', 'Rome', 550.00, 2);
+
+----------------------------------------------------------------------------------------------------
+-- Slice: View only sales data for 'Electronics' category
+SELECT 
+    sale_date,
+    product_subcategory,
+    region,
+    country,
+    city,
+    sales_amount,
+    quantity_sold
+FROM sales_fact
+WHERE product_category = 'Electronics'
+ORDER BY sale_date;
+
+-- Slice: View only Q1 2024 data
+SELECT 
+    product_category,
+    product_subcategory,
+    region,
+    sales_amount
+FROM sales_fact
+WHERE sale_date BETWEEN '2024-01-01' AND '2024-03-31'
+ORDER BY product_category, region;
+
+
+----------------------------------------------------------------------------------------------------
+-- Dice: View sales data for specific product categories in specific regions
+SELECT 
+    sale_date,
+    product_category,
+    product_subcategory,
+    region,
+    country,
+    sales_amount
+FROM sales_fact
+WHERE product_category IN ('Electronics', 'Clothing')
+  AND region IN ('North America', 'Europe')
+  AND sale_date BETWEEN '2024-01-01' AND '2024-02-29'
+ORDER BY product_category, region, sale_date;
+
+-- Dice: View sales for specific product subcategories in specific cities
+SELECT 
+    sale_date,
+    product_subcategory,
+    city,
+    sales_amount,
+    quantity_sold
+FROM sales_fact
+WHERE product_subcategory IN ('Smartphones', 'Laptops')
+  AND city IN ('New York', 'London', 'Tokyo')
+  AND sales_amount > 1000;
+
+----------------------------------------------------------------------------------------------------
+-- Drill-up: Aggregate detailed data to higher level
+-- Summarize sales by region
+SELECT 
+    region,
+    SUM(sales_amount) as total_sales,
+    SUM(quantity_sold) as total_quantity
+FROM sales_fact
+GROUP BY region
+ORDER BY total_sales DESC;
+
+-- Drill-down: View more detailed data from aggregated data
+-- First view region summary, then drill down to country level
+SELECT 
+    region,
+    country,
+    SUM(sales_amount) as total_sales,
+    SUM(quantity_sold) as total_quantity
+FROM sales_fact
+GROUP BY region, country
+ORDER BY region, total_sales DESC;
+
+-- Continue drilling down to city level
+SELECT 
+    region,
+    country,
+    city,
+    SUM(sales_amount) as total_sales,
+    SUM(quantity_sold) as total_quantity
+FROM sales_fact
+GROUP BY region, country, city
+ORDER BY region, country, total_sales DESC;
+
+-- Cross-dimensional drilling: From product dimension to geographic dimension
+-- First aggregate by product category
+SELECT 
+    product_category,
+    SUM(sales_amount) as category_sales
+FROM sales_fact
+GROUP BY product_category;
+
+-- Then drill down to product subcategory
+SELECT 
+    product_category,
+    product_subcategory,
+    SUM(sales_amount) as subcategory_sales
+FROM sales_fact
+GROUP BY product_category, product_subcategory
+ORDER BY product_category, subcategory_sales DESC;
+----------------------------------------------------------------------------------------------------
+-- Use CROSSTAB extension to create pivot table
+CREATE EXTENSION IF NOT EXISTS tablefunc;
+
+-- Sales pivot table by region and product category
+SELECT * FROM crosstab(
+    'SELECT region, product_category, SUM(sales_amount) 
+     FROM sales_fact 
+     GROUP BY region, product_category 
+     ORDER BY 1, 2',
+    'SELECT DISTINCT product_category FROM sales_fact ORDER BY 1'
+) AS ct(region VARCHAR, electronics NUMERIC, clothing NUMERIC);
+
+-- Manual pivot implementation (without using crosstab)
+SELECT 
+    region,
+    SUM(CASE WHEN product_category = 'Electronics' THEN sales_amount ELSE 0 END) as electronics_sales,
+    SUM(CASE WHEN product_category = 'Clothing' THEN sales_amount ELSE 0 END) as clothing_sales,
+    SUM(sales_amount) as total_sales
+FROM sales_fact
+GROUP BY region
+ORDER BY region;
+
+-- More complex pivot: By month and product category
+SELECT 
+    EXTRACT(YEAR FROM sale_date) as year,
+    EXTRACT(MONTH FROM sale_date) as month,
+    SUM(CASE WHEN product_category = 'Electronics' THEN sales_amount ELSE 0 END) as electronics_sales,
+    SUM(CASE WHEN product_category = 'Clothing' THEN sales_amount ELSE 0 END) as clothing_sales,
+    SUM(CASE WHEN product_subcategory = 'Smartphones' THEN sales_amount ELSE 0 END) as smartphone_sales,
+    SUM(CASE WHEN product_subcategory = 'Laptops' THEN sales_amount ELSE 0 END) as laptop_sales
+FROM sales_fact
+GROUP BY EXTRACT(YEAR FROM sale_date), EXTRACT(MONTH FROM sale_date)
+ORDER BY year, month;

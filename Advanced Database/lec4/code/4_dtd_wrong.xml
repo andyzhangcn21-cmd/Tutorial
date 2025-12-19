@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE university [
+<!ELEMENT university ( (department|course|instructor|teaches)+)>
+<!ELEMENT department (dept_name, building, budget)>
+<!ELEMENT course (course_id, title, dept_name, credits)>
+<!ELEMENT instructor (IID, name, dept_name, salary)>
+<!ELEMENT teaches (IID, course_id)>
+<!ELEMENT dept_name (#PCDATA)>
+<!ELEMENT building (#PCDATA)>
+<!ELEMENT budget (#PCDATA)>
+<!ELEMENT course_id (#PCDATA)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT credits (#PCDATA)>
+<!ELEMENT IID (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT salary (#PCDATA)>
+]>
+<university>
+    <department>
+        <dept_name>Computer Science</dept_name>
+        <building>Building A</building>
+        <budget>500000</budget>
+    </department>
+    <course>
+        <course_id>CS-101</course_id>
+        <title>Introduction to Computer Science</title>
+        <dept_name>Computer Science</dept_name>
+        <credits>4</credits>
+    </course>
+    <instructor>
+        <IID>I12345</IID>
+        <name>John Doe</name>
+        <dept_name>Computer Science</dept_name>
+        <salary>75000</salary>
+    </instructor>
+    <teaches>
+        <IID>I12345</IID>
+        <course_id>CS-101</course_id>
+    </teaches>
+    <!-- 故意引入错误 -->
+    <department>
+        <dept_name>Mathematics</dept_name>
+        <building>Building B</building>
+        <!-- 缺少 <budget> 元素 -->
+    </department>
+    <course>
+        <course_id>MA-101</course_id>
+        <title>Introduction to Mathematics</title>
+        <dept_name>Mathematics</dept_name>
+        <!-- 缺少 <credits> 元素 -->
+    </course>
+    <instructor>
+        <IID>I67890</IID>
+        <name>Jane Smith</name>
+        <dept_name>Mathematics</dept_name>
+        <!-- 缺少 <salary> 元素 -->
+    </instructor>
+    <teaches>
+        <IID>I67890</IID>
+        <course_id>MA-101</course_id>
+    </teaches>
+</university>

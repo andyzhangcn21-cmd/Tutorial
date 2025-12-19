@@ -1,0 +1,94 @@
+/* =========================================================
+   0. Create two base tables: orders + order_items
+   ========================================================= */
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+
+CREATE TABLE orders (
+    order_id     serial PRIMARY KEY,
+    customer     text   NOT NULL,
+    order_date   date   NOT NULL
+);
+
+CREATE TABLE order_items (
+    item_id   serial PRIMARY KEY,
+    order_id  int REFERENCES orders(order_id),
+    product   text   NOT NULL,
+    qty       int    NOT NULL,
+    price     numeric(10,2) NOT NULL
+);
+
+/* Insert sample data */
+INSERT INTO orders(customer, order_date) VALUES
+  ('Alice', '2025-09-10'),
+  ('Bob',   '2025-09-11');
+
+INSERT INTO order_items(order_id, product, qty, price) VALUES
+  (1, 'iPhone', 1, 8000.00),
+  (1, 'Case',   2,   50.00),
+  (2, 'MacBook',1,12000.00);
+
+/* =========================================================
+   1. Regular view: v_order_summary
+      Always returns up-to-date data from underlying tables
+   ========================================================= */
+CREATE OR REPLACE VIEW v_order_summary AS
+SELECT o.order_id,
+       o.customer,
+       o.order_date,
+       SUM(oi.qty * oi.price) AS total_amount
+FROM   orders o
+JOIN   order_items oi ON oi.order_id = o.order_id
+GROUP  BY o.order_id, o.customer, o.order_date;
+
+-- Query the view
+SELECT * FROM v_order_summary;
+
+/* =========================================================
+   2. Materialized view: mv_order_summary
+      Stores a physical snapshot; does not hit base tables when queried
+   ========================================================= */
+CREATE MATERIALIZED VIEW mv_order_summary AS
+SELECT o.order_id,
+       o.customer,
+       o.order_date,
+       SUM(oi.qty * oi.price) AS total_amount
+FROM   orders o
+JOIN   order_items oi ON oi.order_id = o.order_id
+GROUP  BY o.order_id, o.customer, o.order_date;
+
+-- Query the materialized view
+SELECT * FROM mv_order_summary;
+
+/* =========================================================
+   3. Show the difference after modifying base tables
+   ========================================================= */
+-- 3.1 Insert a new order
+INSERT INTO orders(customer, order_date) VALUES ('Charlie', '2025-09-12');
+INSERT INTO order_items(order_id, product, qty, price) VALUES
+  (3, 'AirPods', 1, 1500.00);
+
+-- 3.2 Regular view immediately reflects the new row
+SELECT 'Regular view' AS src, * FROM v_order_summary;
+
+-- 3.3 Materialized view still shows the old snapshot
+SELECT 'Materialized view (not refreshed)' AS src, * FROM mv_order_summary;
+
+-- 3.4 Refresh the materialized view
+REFRESH MATERIALIZED VIEW mv_order_summary;
+
+-- 3.5 Now the materialized view is synchronized
+SELECT 'Materialized view (refreshed)' AS src, * FROM mv_order_summary;
+
+/* =========================================================
+   4. Add an index to the materialized view to speed up queries
+   ========================================================= */
+CREATE INDEX idx_mv_customer ON mv_order_summary(customer);
+
+/* =========================================================
+   5. Clean-up (optional)
+   ========================================================= */
+-- DROP VIEW v_order_summary;
+-- DROP MATERIALIZED VIEW mv_order_summary;
+-- DROP TABLE order_items, orders;
+

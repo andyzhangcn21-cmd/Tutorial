@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<student student_id="S12345" age="20">
+    <name>John Doe</name>
+    <course>CS-101</course>
+    <course>CS-102</course>
+</student>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<student>
+    <student_id>S12345</student_id>
+    <name>John Doe</name>
+    <age>20</age>
+    <courses>
+        <course>CS-101</course>
+        <course>CS-102</course>
+    </courses>
+</student>

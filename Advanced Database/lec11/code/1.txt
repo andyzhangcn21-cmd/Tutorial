@@ -1,0 +1,30 @@
+-- First, create a test table and insert some data
+CREATE TABLE test_table (
+    id SERIAL PRIMARY KEY,
+    value INTEGER
+);
+
+INSERT INTO test_table (value) VALUES (1);
+
+------------------------------------------------------------------------------------------
+-- 1. READ COMMITTED Isolation Level
+-- In this isolation level, a transaction can only see data that has been committed by other transactions.
+ 
+-- Session A
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SELECT value FROM test_table WHERE id = 1; -- Assume it returns 1
+UPDATE test_table SET value = value + 1 WHERE id = 1;
+-- Not committed yet
+ 
+-- Session B (concurrent environment)
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SELECT value FROM test_table WHERE id = 1; -- May return 1 or 2, depending on whether Session A has committed
+UPDATE test_table SET value = value + 1 WHERE id = 1;
+-- Commit
+COMMIT;
+ 
+-- Session A
+COMMIT; -- After committing, value should be 3 (if Session B's SELECT saw 1) or 4 (if Session B's SELECT saw 2)
+ 

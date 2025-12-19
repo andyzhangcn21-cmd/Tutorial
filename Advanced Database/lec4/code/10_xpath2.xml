@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<university-3>
+    <course dept_name="Comp. Sci" id="CS101">
+        <name>Introduction to Computer Science</name>
+        <instructor id="I1">
+            <name>John Doe</name>
+            <teaches>
+                <course>CS101</course>
+                <course>CS201</course>
+                <course>CS301</course>
+            </teaches>
+        </instructor>
+    </course>
+    <course dept_name="Biology" id="BI101">
+        <name>Introduction to Biology</name>
+        <instructor id="I2">
+            <name>Jane Smith</name>
+            <teaches>
+                <course>BI101</course>
+                <course>BI201</course>
+            </teaches>
+        </instructor>
+    </course>
+    <course dept_name="Comp. Sci" id="CS201">
+        <name>Data Structures</name>
+        <instructor id="I1"/>
+    </course>
+    <course dept_name="Biology" id="BI201">
+        <name>Genetics</name>
+        <instructor id="I2"/>
+    </course>
+    <course dept_name="Comp. Sci" id="CS301">
+        <name>Algorithms</name>
+        <instructor id="I1"/>
+    </course>
+    <department id="CS">
+        <name>Computer Science</name>
+    </department>
+    <department id="BI">
+        <name>Biology</name>
+    </department>
+</university-3>
+
+<!--
+
+/university-3/course[@dept_name="Comp. Sci"] | /university-3/course[@dept_name="Biology"]
+/university-3//name
+/university-3/course/../department
+/university-3//instructor[count(./teaches/course) > 1] 
+
+-->

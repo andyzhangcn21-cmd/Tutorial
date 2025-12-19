@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE university [
+    <!ELEMENT university ( (department|course|instructor)+)>
+    <!ELEMENT department ( building, budget )>
+    <!ATTLIST department
+           dept_name ID #REQUIRED >
+    <!ELEMENT course (title, credits )>
+    <!ATTLIST course
+           course_id ID #REQUIRED
+           dept_name IDREF #REQUIRED
+           instructors IDREFS #IMPLIED >
+    <!ELEMENT instructor ( name, salary )>
+    <!ATTLIST instructor
+           IID ID #REQUIRED 
+           dept_name IDREF #REQUIRED >
+    <!ELEMENT title (#PCDATA)>
+    <!ELEMENT credits (#PCDATA)>
+    <!ELEMENT building (#PCDATA)>
+    <!ELEMENT budget (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT salary (#PCDATA)>
+]>
+
+<university>
+    <!-- 计算机科学系 -->
+    <department dept_name="CS">
+        <building>科技楼</building>
+        <budget>500000</budget>
+    </department>
+    
+    <!-- 数学系 -->
+    <department dept_name="MATH">
+        <building>数理楼</building>
+        <budget>300000</budget>
+    </department>
+    
+    <!-- 计算机系教师 -->
+    <instructor IID="ins01" dept_name="CS">
+        <name>张三</name>
+        <salary>80000</salary>
+    </instructor>
+    
+    <instructor IID="ins02" dept_name="CS">
+        <name>李四</name>
+        <salary>75000</salary>
+    </instructor>
+    
+    <!-- 数学系教师 -->
+    <instructor IID="ins03" dept_name="MATH">
+        <name>王五</name>
+        <salary>70000</salary>
+    </instructor>
+    
+    <!-- 计算机系课程 -->
+    <course course_id="CS101" dept_name="CS" instructors="ins01">
+        <title>计算机导论</title>
+        <credits>3</credits>
+    </course>
+    
+    <course course_id="CS201" dept_name="CS" instructors="ins01 ins02">
+        <title>数据结构</title>
+        <credits>4</credits>
+    </course>
+    
+    <!-- 数学系课程 -->
+    <course course_id="MATH101" dept_name="MATH" instructors="ins03">
+        <title>高等数学</title>
+        <credits>5</credits>
+    </course>
+</university>

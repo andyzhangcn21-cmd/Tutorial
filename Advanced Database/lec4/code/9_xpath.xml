@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<university-3>
+    <instructor>
+        <name>Srinivasan</name>
+        <course>
+            <credits>4</credits>
+            <course_id>CS101</course_id>
+        </course>
+        <course>
+            <credits>3</credits>
+            <course_id>CS102</course_id>
+        </course>
+    </instructor>
+    <instructor>
+        <name>Brandt</name>
+        <course>
+            <credits>5</credits>
+            <course_id>CS201</course_id>
+        </course>
+        <course>
+            <credits>3</credits>
+            <course_id>CS202</course_id>
+        </course>
+    </instructor>
+    <course credits="4" course_id="CS301">
+        <credits>4</credits>
+    </course>
+    <course credits="5" course_id="CS302">
+        <credits>5</credits>
+    </course>
+    <course credits="3" course_id="CS303">
+        <credits>3</credits>
+    </course>
+</university-3>
+
+<!--
+/university-3/instructor/name
+/university-3/instructor/name/text()
+/university-3/course[credits >= 4]
+/university-3/course[credits]
+/university-3/course[credits >= 4]/@course_id
+-->

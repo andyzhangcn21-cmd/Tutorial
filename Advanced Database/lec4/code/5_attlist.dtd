@@ -1,0 +1,20 @@
+<!ELEMENT university-3 (department*, course*, instructor*)>
+<!ELEMENT department (building, budget)>
+<!ELEMENT building (#PCDATA)>
+<!ELEMENT budget (#PCDATA)>
+<!ELEMENT course (title, credits)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT credits (#PCDATA)>
+<!ELEMENT instructor (name, salary)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT salary (#PCDATA)>
+
+<!ATTLIST department
+          dept name CDATA #REQUIRED>
+<!ATTLIST course
+          course id CDATA #REQUIRED
+          dept name CDATA #REQUIRED
+          instructors CDATA #REQUIRED>
+<!ATTLIST instructor
+          IID CDATA #REQUIRED
+          dept name CDATA #REQUIRED>

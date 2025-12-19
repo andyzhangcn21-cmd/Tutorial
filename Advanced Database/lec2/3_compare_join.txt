@@ -1,0 +1,46 @@
+-- cleanup
+DROP TABLE IF EXISTS big, small;
+
+-- fact table 1M rows
+CREATE TABLE big AS
+SELECT i AS id,
+       'user_' || i AS name,
+       (random()*1000)::int AS dept_id,
+       repeat('x', 100) AS pad          -- make rows fatter to amplify I/O diff
+FROM generate_series(1,100000) i;
+
+-- dimension table 1K rows
+CREATE TABLE small AS
+SELECT i AS dept_id,
+       'dept_' || i AS dept_name
+FROM generate_series(0,99) i;
+
+-- indexes
+ALTER TABLE big ADD PRIMARY KEY (id);
+ALTER TABLE small ADD PRIMARY KEY (dept_id);
+CREATE INDEX big_dept_id_idx ON big(dept_id);
+ANALYZE big, small;
+
+-- a function the optimizer cannot inline
+CREATE FUNCTION get_dept(p int) RETURNS int AS $$
+BEGIN
+  -- tiny delay + prevents inlining
+  PERFORM pg_sleep(0.0001);
+  RETURN p;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+EXPLAIN (ANALYZE, BUFFERS, TIMING)
+SELECT count(*), max(b.name)
+FROM big b
+JOIN small s ON s.dept_id = get_dept(b.dept_id)   -- function in JOIN clause
+WHERE get_dept(b.dept_id) = 123;                  -- filter applied after JOIN
+
+EXPLAIN (ANALYZE, BUFFERS, TIMING)
+WITH filt AS (
+    SELECT * FROM big
+    WHERE get_dept(dept_id) = 123      -- pre-filter
+)
+SELECT count(*), max(f.name)
+FROM filt f
+JOIN small s ON s.dept_id = get_dept(f.dept_id);

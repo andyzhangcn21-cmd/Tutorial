@@ -1,0 +1,181 @@
+from abc import ABC, abstractmethod
+
+# =============================================
+# Abstract Class Example
+# =============================================
+
+class Animal(ABC):
+    """Abstract class representing an animal.
+    Can contain both abstract and concrete methods.
+    """
+    
+    def __init__(self, name):
+        self.name = name
+        self.age = 0  # Concrete attribute
+    
+    @abstractmethod
+    def make_sound(self):
+        """Abstract method - must be implemented by subclasses"""
+        pass
+    
+    @abstractmethod
+    def move(self):
+        """Another abstract method"""
+        pass
+    
+    def sleep(self):
+        """Concrete method - already implemented"""
+        return f"{self.name} is sleeping"
+    
+    def get_info(self):
+        """Concrete method with common functionality"""
+        return f"{self.name}, {self.age} years old"
+
+# Concrete class implementing the abstract class
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)
+        self.breed = breed
+    
+    def make_sound(self):
+        return "Woof! Woof!"
+    
+    def move(self):
+        return f"{self.name} is running on four legs"
+
+class Bird(Animal):
+    def __init__(self, name, wingspan):
+        super().__init__(name)
+        self.wingspan = wingspan
+    
+    def make_sound(self):
+        return "Chirp! Chirp!"
+    
+    def move(self):
+        return f"{self.name} is flying"
+
+# =============================================
+# Interface-like Example in Python
+# =============================================
+
+class Flyable(ABC):
+    """Interface-like class - only abstract methods"""
+    
+    @abstractmethod
+    def fly(self):
+        """Define flying behavior"""
+        pass
+    
+    @abstractmethod
+    def get_max_altitude(self):
+        """Get maximum flying altitude"""
+        pass
+
+class Swimmable(ABC):
+    """Another interface-like class"""
+    
+    @abstractmethod
+    def swim(self):
+        """Define swimming behavior"""
+        pass
+    
+    @abstractmethod
+    def get_max_depth(self):
+        """Get maximum swimming depth"""
+        pass
+
+# =============================================
+# Multiple Inheritance (Implementing Multiple Interfaces)
+# =============================================
+
+class Duck(Animal, Flyable, Swimmable):
+    """Duck inherits from Animal and implements multiple interfaces"""
+    
+    def __init__(self, name):
+        Animal.__init__(self, name)
+        self.flying_altitude = 100  # meters
+        self.swimming_depth = 3     # meters
+    
+    # Animal abstract methods
+    def make_sound(self):
+        return "Quack! Quack!"
+    
+    def move(self):
+        return f"{self.name} is waddling"
+    
+    # Flyable interface methods
+    def fly(self):
+        return f"{self.name} is flying up to {self.flying_altitude}m"
+    
+    def get_max_altitude(self):
+        return self.flying_altitude
+    
+    # Swimmable interface methods
+    def swim(self):
+        return f"{self.name} is swimming up to {self.swimming_depth}m deep"
+    
+    def get_max_depth(self):
+        return self.swimming_depth
+
+class Fish(Animal, Swimmable):
+    """Fish inherits from Animal and implements Swimmable interface"""
+    
+    def __init__(self, name, species):
+        Animal.__init__(self, name)
+        self.species = species
+        self.max_depth = 50  # meters
+    
+    # Animal abstract methods
+    def make_sound(self):
+        return "(Fish bubbles)"
+    
+    def move(self):
+        return f"{self.name} is swimming"
+    
+    # Swimmable interface methods
+    def swim(self):
+        return f"{self.name} is swimming deep underwater"
+    
+    def get_max_depth(self):
+        return self.max_depth
+
+# =============================================
+# Demonstration
+# =============================================
+
+if __name__ == "__main__":
+    print("=== ABSTRACT CLASS DEMONSTRATION ===")
+    dog = Dog("Buddy", "Golden Retriever")
+    bird = Bird("Tweety", 15)
+    
+    print(dog.make_sound())  # Woof! Woof!
+    print(bird.move())       # Tweety is flying
+    print(dog.sleep())       # Buddy is sleeping (inherited concrete method)
+    
+    print("\n=== INTERFACE DEMONSTRATION ===")
+    duck = Duck("Donald")
+    fish = Fish("Nemo", "Clownfish")
+    
+    # Duck can do everything
+    print(duck.make_sound())         # Quack! Quack!
+    print(duck.fly())                # Donald is flying up to 100m
+    print(duck.swim())               # Donald is swimming up to 3m deep
+    
+    # Fish can only swim, not fly
+    print(fish.swim())               # Nemo is swimming deep underwater
+    print(fish.get_max_depth())      # 50
+    
+    print("\n=== TYPE CHECKING ===")
+    # Check if objects implement specific interfaces
+    print(f"Is duck an Animal? {isinstance(duck, Animal)}")      # True
+    print(f"Is duck Flyable? {isinstance(duck, Flyable)}")       # True  
+    print(f"Is duck Swimmable? {isinstance(duck, Swimmable)}")   # True
+    
+    print(f"Is fish Flyable? {isinstance(fish, Flyable)}")       # False
+    print(f"Is fish Swimmable? {isinstance(fish, Swimmable)}")   # True
+
+    # This would raise TypeError - cannot instantiate abstract class
+    try:
+        animal = Animal("Generic")
+    except TypeError as e:
+        print(f"\nCannot instantiate abstract class: {e}")

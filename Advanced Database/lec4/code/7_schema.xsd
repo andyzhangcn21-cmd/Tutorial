@@ -1,0 +1,61 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- 定义根元素 university -->
+    <xs:element name="university" type="UniversityType" />
+
+    <!-- 定义 department 元素 -->
+    <xs:element name="department">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="deptName" type="xs:string" />
+                <xs:element name="building" type="xs:string" />
+                <xs:element name="budget" type="xs:decimal" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- 定义 instructor 元素 -->
+    <xs:element name="instructor">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="IID" type="xs:string" />
+                <xs:element name="name" type="xs:string" />
+                <xs:element name="deptName" type="xs:string" />
+                <xs:element name="salary" type="xs:decimal" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- 定义 course 元素 -->
+    <xs:element name="course">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="courseID" type="xs:string" />
+                <xs:element name="title" type="xs:string" />
+                <xs:element name="deptName" type="xs:string" />
+                <xs:element name="credits" type="xs:integer" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- 定义 teaches 元素 -->
+    <xs:element name="teaches">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="IID" type="xs:string" />
+                <xs:element name="courseID" type="xs:string" />
+                <xs:element name="semester" type="xs:string" />
+                <xs:element name="year" type="xs:integer" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- 定义 UniversityType 复杂类型 -->
+    <xs:complexType name="UniversityType">
+        <xs:sequence>
+            <xs:element ref="department" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element ref="course" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element ref="instructor" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element ref="teaches" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,44 @@
+/* =========================================================
+   A “universal” table that stores all types and casts among them
+   ========================================================= */
+CREATE TABLE all_types (
+    id      serial PRIMARY KEY,
+    i       int,
+    num     numeric(10,2),
+    f       float8,
+    txt     text,
+    ts      timestamp,
+    dt      date,
+    boo     boolean,
+    js      jsonb,
+    arr     int[],
+    uid     uuid,
+    net     inet,
+    rng     int4range
+);
+
+INSERT INTO all_types(i,num,f,txt,ts,dt,boo,js,arr,uid,net,rng)
+SELECT
+    42,
+    123.45,
+    3.14159,
+    'hello',
+    '2025-09-13 14:30:00',
+    '2025-09-13',
+    true,
+    '{"a":1}',
+    '{1,2,3}',
+    gen_random_uuid(),
+    '10.0.0.0/8',
+    '[100,200)';
+
+/* Play with casts */
+SELECT
+    i::text        AS int2text,
+    (js->>'a')::int  AS jsonfield2int,
+    arr::text      AS arr2text,
+    uid::text      AS uuid2text,
+    net::cidr      AS inet2cidr,
+    upper(rng)     AS rng_upper
+FROM all_types
+LIMIT 1;

@@ -1,0 +1,33 @@
+-- 1. 
+CREATE TABLE course (
+    course_id  VARCHAR(8) PRIMARY KEY,
+    title      VARCHAR(100) NOT NULL,
+    dept_name  VARCHAR(30)  NOT NULL,
+    credits    INTEGER      CHECK (credits > 0)
+);
+
+INSERT INTO course (course_id, title, dept_name, credits) VALUES
+('BIO-301', 'Genetics',   'Biology',    4),
+('CS-190',  'Game Design','Comp. Sci.', 4),
+('CS-315',  'Robotics',   'Comp. Sci.', 3);
+
+-- 2. 
+CREATE TABLE prereq (
+    course_id  VARCHAR(8),
+    prereq_id  VARCHAR(8),
+    PRIMARY KEY (course_id, prereq_id)
+);
+
+INSERT INTO prereq (course_id, prereq_id) VALUES
+('BIO-301', 'BIO-101'),
+('CS-190',  'CS-101'),
+('CS-347',  'CS-101');
+
+
+select * from course natural left outer join prereq;
+
+select * from course natural right outer join prereq;
+
+select * from course natural full outer join prereq;
+
+

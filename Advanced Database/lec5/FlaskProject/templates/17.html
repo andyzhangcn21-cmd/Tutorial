@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Input Example</title>
+</head>
+<body>
+    <h1>Enter Your Text</h1>
+    <form action="/submit" method="post">
+        <label for="user_input">Text:</label>
+        <input type="text" name="user_input" id="user_input">
+        <input type="submit" value="Submit">
+    </form>
+    <h2>Previous Inputs:</h2>
+    <ul>
+        {% for input in user_inputs %}
+            <li>{{ input.content }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

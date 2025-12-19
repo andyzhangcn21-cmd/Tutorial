@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<university name="Moonshot University">
+  <departments>
+    <department id="1" name="Computer Science">
+      <courses>
+        <course id="101" name="Data Structures" credits="4">
+          <teacher id="t1" />
+        </course>
+        <course id="102" name="Algorithms" credits="4">
+          <teacher id="t2" />
+        </course>
+      </courses>
+    </department>
+    <department id="2" name="Mathematics">
+      <courses>
+        <course id="201" name="Calculus" credits="3">
+          <teacher id="t3" />
+        </course>
+        <course id="202" name="Linear Algebra" credits="3">
+          <teacher id="t4" />
+        </course>
+      </courses>
+    </department>
+  </departments>
+  <teachers>
+    <teacher id="t1" name="Alice" department="1" />
+    <teacher id="t2" name="Bob" department="1" />
+    <teacher id="t3" name="Charlie" department="2" />
+    <teacher id="t4" name="David" department="2" />
+  </teachers>
+</university>
+
+<!--
+
+Join
+
+for $course in /university/departments/department/courses/course,
+    $teacher in /university/teachers/teacher
+where $course/teacher/@id = $teacher/@id
+return <course>
+         <name>{$course/@name}</name>
+         <teacher>{$teacher/@name}</teacher>
+       </course>
+
+Nested Queries
+
+for $department in /university/departments/department
+let $courses := $department/courses/course
+let $teacher := (
+  for $teacher in /university/teachers/teacher
+  let $courseCount := count($courses[teacher/@id = $teacher/@id])
+  order by $courseCount descending
+  return $teacher
+)[1]
+return <department>
+         <name>{$department/@name}</name>
+         <teacher>{$teacher/@name}</teacher>
+       </department>
+
+Grouping and Aggregation
+
+for $department in /university/departments/department
+let $courses := $department/courses/course
+let $totalCourses := count($courses)
+let $totalCredits := sum($courses/@credits)
+let $averageCredits := $totalCredits div $totalCourses
+return <department>
+         <name>{$department/@name}</name>
+         <totalCourses>{$totalCourses}</totalCourses>
+         <averageCredits>{$averageCredits}</averageCredits>
+       </department>
+
+Sorting
+
+for $course in /university/departments/department/courses/course
+order by $course/@credits ascending
+return <course>
+         <name>{$course/@name}</name>
+         <credits>{$course/@credits}</credits>
+       </course>
+
+
+-->

@@ -1,0 +1,188 @@
+from functools import reduce
+from collections import defaultdict
+import re
+
+# Sample document collection
+documents = {
+    1: "the cat sat on the mat",
+    2: "the dog played with the cat", 
+    3: "the mat is clean and the cat is happy",
+    4: "dog and cat are friends"
+}
+
+def tokenize_document(doc_item):
+    """
+    Mapper function: Process a single document, return (word, doc_id) pairs
+    """
+    doc_id, text = doc_item
+    # Clean text: convert to lowercase and split words
+    words = re.findall(r'\b\w+\b', text.lower())
+    
+    # Generate (word, doc_id) pairs for each word
+    return [(word, doc_id) for word in words]
+
+def inverted_index_reducer(accumulator, current_item):
+    """
+    Reducer function: Aggregate document IDs for the same word
+    """
+    word, doc_id = current_item
+    
+    if word not in accumulator:
+        accumulator[word] = set()
+    
+    accumulator[word].add(doc_id)
+    return accumulator
+
+def build_inverted_index(docs):
+    """
+    Main function to build inverted index
+    """
+    print("=== Document Collection ===")
+    for doc_id, text in docs.items():
+        print(f"Document{doc_id}: {text}")
+    print()
+    
+    # Map Phase: Process all documents
+    print("=== Map Phase ===")
+    mapped_results = []
+    for doc_item in docs.items():
+        doc_result = tokenize_document(doc_item)
+        mapped_results.extend(doc_result)
+        print(f"Document{doc_item[0]} mapping result: {doc_result}")
+    print()
+    
+    # Sort by word (simulating Shuffle phase)
+    print("=== Shuffle Phase (sort by word) ===")
+    sorted_results = sorted(mapped_results, key=lambda x: x[0])
+    print("Sorted intermediate results:")
+    for word, doc_id in sorted_results:
+        print(f"  ({word}, {doc_id})")
+    print()
+    
+    # Reduce Phase: Aggregate document IDs for same words
+    print("=== Reduce Phase ===")
+    inverted_index = reduce(inverted_index_reducer, sorted_results, {})
+    
+    # Convert sets to sorted lists for better display
+    for word in inverted_index:
+        inverted_index[word] = sorted(inverted_index[word])
+    
+    return inverted_index
+
+def search(query, inverted_index):
+    """
+    Search using the inverted index
+    """
+    words = re.findall(r'\b\w+\b', query.lower())
+    print(f"\nSearch query: '{query}'")
+    
+    results = []
+    for word in words:
+        if word in inverted_index:
+            print(f"Word '{word}' appears in documents: {inverted_index[word]}")
+            results.append(set(inverted_index[word]))
+        else:
+            print(f"Word '{word}' not found in any document")
+            results.append(set())
+    
+    # For multi-word queries, return documents containing all words (intersection)
+    if len(results) > 1:
+        final_docs = set.intersection(*results)
+        print(f"Documents containing all query words: {sorted(final_docs)}")
+        return sorted(final_docs)
+    elif results:
+        return sorted(results[0])
+    else:
+        return []
+
+# Build inverted index
+print("Inverted Index Construction Process:")
+print("=" * 50)
+inverted_index = build_inverted_index(documents)
+
+# Display final inverted index
+print("=== Final Inverted Index ===")
+for word, doc_ids in sorted(inverted_index.items()):
+    print(f"{word:10} -> {doc_ids}")
+
+# Test search functionality
+print("\n" + "=" * 50)
+print("Search Tests:")
+print("=" * 50)
+
+# Test cases
+test_queries = ["cat", "dog", "mat", "cat dog", "the happy", "unknownword"]
+
+for query in test_queries:
+    search(query, inverted_index)
+    print("-" * 30)
+
+# Advanced version: Inverted index with term frequency
+def advanced_tokenize_document(doc_item):
+    """
+    Advanced Mapper: Returns (word, (doc_id, term_frequency))
+    """
+    doc_id, text = doc_item
+    words = re.findall(r'\b\w+\b', text.lower())
+    
+    # Calculate term frequency
+    word_freq = defaultdict(int)
+    for word in words:
+        word_freq[word] += 1
+    
+    return [(word, (doc_id, word_freq[word])) for word in set(words)]
+
+def advanced_reducer(accumulator, current_item):
+    """
+    Advanced Reducer: Aggregate document IDs with term frequencies
+    """
+    word, (doc_id, freq) = current_item
+    
+    if word not in accumulator:
+        accumulator[word] = []
+    
+    accumulator[word].append((doc_id, freq))
+    return accumulator
+
+print("\n" + "=" * 50)
+print("Advanced Version: Inverted Index with Term Frequency")
+print("=" * 50)
+
+# Build advanced inverted index with term frequency
+mapped_advanced = []
+for doc_item in documents.items():
+    mapped_advanced.extend(advanced_tokenize_document(doc_item))
+
+sorted_advanced = sorted(mapped_advanced, key=lambda x: x[0])
+advanced_index = reduce(advanced_reducer, sorted_advanced, {})
+
+print("Inverted Index with Term Frequency:")
+for word, doc_freq_list in sorted(advanced_index.items()):
+    print(f"{word:10} -> {doc_freq_list}")
+
+# Additional example: Simple one-liner version
+print("\n" + "=" * 50)
+print("One-liner MapReduce Version")
+print("=" * 50)
+
+# Using Python's built-in functions more directly
+def simple_inverted_index(docs):
+    # Map: Create (word, doc_id) pairs
+    pairs = [(word.lower(), doc_id) 
+             for doc_id, text in docs.items() 
+             for word in re.findall(r'\b\w+\b', text)]
+    
+    # Reduce: Group by word and collect unique doc_ids
+    index = {}
+    for word, doc_id in sorted(pairs):
+        if word not in index:
+            index[word] = set()
+        index[word].add(doc_id)
+    
+    # Convert sets to sorted lists
+    return {word: sorted(docs) for word, docs in index.items()}
+
+simple_index = simple_inverted_index(documents)
+print("Simple Inverted Index:")
+for word, doc_ids in sorted(simple_index.items()):
+    print(f"{word:10} -> {doc_ids}")

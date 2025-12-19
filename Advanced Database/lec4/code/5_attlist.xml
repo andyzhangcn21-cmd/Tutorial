@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE university-3 [
+	<!ELEMENT university-3 (department*, course*, instructor*)>
+	<!ELEMENT department (building, budget)>
+	<!ELEMENT building (#PCDATA)>
+	<!ELEMENT budget (#PCDATA)>
+	<!ELEMENT course (title, credits)>
+	<!ELEMENT title (#PCDATA)>
+	<!ELEMENT credits (#PCDATA)>
+	<!ELEMENT instructor (name, salary)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT salary (#PCDATA)>
+	
+<!ATTLIST department
+	          deptname CDATA #REQUIRED>
+	<!ATTLIST course
+	          courseid CDATA #REQUIRED
+	          deptname CDATA #REQUIRED
+	          instructors CDATA #REQUIRED>
+	<!ATTLIST instructor
+	          IID CDATA #REQUIRED
+	          deptname CDATA #REQUIRED>
+]>
+<university-3>
+    <department deptname="Comp. Sci.">
+        <building>Taylor</building>
+        <budget>100000</budget>
+    </department>
+    <department deptname="Biology">
+        <building>Watson</building>
+        <budget>90000</budget>
+    </department>
+    <course courseid="CS-101" deptname="Comp. Sci." instructors="10101 83821">
+        <title>Intro. to Computer Science</title>
+        <credits>4</credits>
+    </course>
+    <course courseid="BI-202" deptname="Biology" instructors="20202">
+        <title>Cell Biology</title>
+        <credits>3</credits>
+    </course>
+    <instructor IID="10101" deptname="Comp. Sci.">
+        <name>Srinivasan</name>
+        <salary>65000</salary>
+    </instructor>
+    <instructor IID="83821" deptname="Comp. Sci.">
+        <name>Wu</name>
+        <salary>70000</salary>
+    </instructor>
+    <instructor IID="20202" deptname="Biology">
+        <name>Smith</name>
+        <salary>60000</salary>
+    </instructor>
+</university-3>
